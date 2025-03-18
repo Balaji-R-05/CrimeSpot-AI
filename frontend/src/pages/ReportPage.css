@@ -1,0 +1,89 @@
+.report-page {
+  min-height: 100vh;
+  background-color: #f3f4f6;
+  padding: 2rem 1rem;
+}
+
+.page-nav {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.nav-link:hover {
+  background-color: #dbeafe;
+}
+
+.report-page h1 {
+  text-align: center;
+  color: #1f2937;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+/* Enhanced form container styling */
+.crime-report-form {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .report-page {
+    padding: 1rem;
+  }
+
+  .page-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .crime-report-form {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .report-page {
+    padding: 0.5rem;
+  }
+
+  .crime-report-form {
+    padding: 1rem;
+  }
+}
+@media (max-width: 640px) {
+  .report-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .page-nav {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .report-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
