@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List
+import base64
 
 app = FastAPI()
 
@@ -24,6 +25,11 @@ class CrimeReport(BaseModel):
     location: Location
     description: str
     dateTime: str
+    images: Optional[List[str]] = None  # Base64 encoded images
+    audioDescription: Optional[str] = None  # Base64 encoded audio
+    isAnonymous: bool = False
+    status: str = "pending"  # pending, investigating, resolved
+    reportTemplate: Dict = {}  # Dynamic fields based on crime type
 
 @app.get("/")
 def home():
@@ -32,12 +38,44 @@ def home():
 @app.post("/report-crime")
 async def report_crime(crime_report: CrimeReport):
     try:
-        # TODO: Add MongoDB integration here
-        # For now, just print the report and return success
+        # TODO: Add MongoDB integration
         print(f"Received crime report: {crime_report}")
-        return {"message": "Crime report submitted successfully"}
+        return {
+            "message": "Crime report submitted successfully",
+            "reportId": "12345",  # Generate unique ID in production
+            "status": crime_report.status
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/report-templates/{crime_type}")
+async def get_report_template(crime_type: str):
+    templates = {
+        "theft": {
+            "itemType": "string",
+            "estimatedValue": "number",
+            "timeOfTheft": "datetime",
+            "suspectDescription": "text"
+        },
+        "assault": {
+            "weaponInvolved": "boolean",
+            "injurySeverity": "select:minor,moderate,severe",
+            "suspectDescription": "text",
+            "witnessPresent": "boolean"
+        },
+        # Add more templates as needed
+    }
+    return templates.get(crime_type, {})
+
+@app.get("/report-status/{report_id}")
+async def get_report_status(report_id: str):
+    # Mock status response
+    return {
+        "reportId": report_id,
+        "status": "investigating",
+        "lastUpdated": datetime.now().isoformat(),
+        "comments": ["Investigation initiated", "Officer assigned"]
+    }
 
 @app.get("/crimes")
 async def get_crimes(timeRange: str = "week"):
