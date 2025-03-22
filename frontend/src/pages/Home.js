@@ -16,6 +16,9 @@ function Home() {
             <Link to="/map" className="nav-button">
               View Crime Map
             </Link>
+            <Link to="/analytics" className="nav-button">
+              Analytics Dashboard
+            </Link>
             <Link to="/community" className="nav-button">
               Community Hub
             </Link>
