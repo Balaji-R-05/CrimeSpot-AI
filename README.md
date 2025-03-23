@@ -1,70 +1,149 @@
-# Getting Started with Create React App
+# CrimeSpot: AI-Powered Crime Reporting Platform
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+CrimeSpot is a modern, AI-powered crime reporting and analysis platform designed to make Chennai safer through community reporting and intelligent crime analysis.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- 🚨 Real-time crime reporting with location mapping
+- 🗺️ Interactive crime heat maps
+- 📊 AI-driven crime analytics dashboard
+- 👥 Anonymous reporting option
+- 📱 Mobile-responsive design
+- 🔒 Secure data handling
+- 🤖 AI-powered pattern recognition
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend
+- React 18
+- React Router DOM
+- Leaflet for maps
+- Recharts for analytics
+- Axios for API calls
+- Material-UI components
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend
+- Python FastAPI
+- MongoDB
+- JWT Authentication
+- uvicorn ASGI server
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
+- Node.js (v14 or higher)
+- Python 3.8+
+- MongoDB
 
-### `npm run build`
+### Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/crimespot.git
+cd crimespot
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2. Set up the backend:
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. Set up the frontend:
+```bash
+cd frontend
+npm install
+```
 
-### `npm run eject`
+4. Create a `.env` file in the backend directory:
+```env
+MONGODB_URI=your_mongodb_uri
+JWT_SECRET=your_jwt_secret
+GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+5. Create a `.env` file in the frontend directory:
+```env
+REACT_APP_API_URL=http://localhost:8000
+REACT_APP_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Running the Application
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Use the provided development script:
+```bash
+run_dev.bat  # On Windows
+./run_dev.sh # On Unix/Linux
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Or run manually:
 
-## Learn More
+1. Start the backend server:
+```bash
+cd backend
+python -m uvicorn main:app --reload --port 8000
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+2. Start the frontend development server:
+```bash
+cd frontend
+npm start
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The application will be available at:
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8000
 
-### Code Splitting
+## API Documentation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+API documentation is available at `http://localhost:8000/docs` when the backend server is running.
 
-### Analyzing the Bundle Size
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+crimespot/
+├── backend/
+│   ├── main.py
+│   ├── requirements.txt
+│   └── ...
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── ...
+│   ├── package.json
+│   └── ...
+├── run_dev.bat
+├── run_dev.sh
+└── README.md
+```
 
-### Making a Progressive Web App
+## Contributing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-### Advanced Configuration
+## License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-### Deployment
+## Acknowledgments
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- Chennai Police Department for their support
+- Community contributors
+- [Create React App](https://github.com/facebook/create-react-app)
+- [FastAPI](https://fastapi.tiangolo.com/)
 
-### `npm run build` fails to minify
+## Contact
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Project Link: https://github.com/yourusername/crimespot
+
+## Support
+
+For support, email support@crimespot.com or join our Slack channel.
+

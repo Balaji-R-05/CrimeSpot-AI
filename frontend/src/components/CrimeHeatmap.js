@@ -1,19 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { MapContainer, TileLayer, Circle, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import axios from 'axios';
-import './CrimeHeatmap.css';
+import { useAuth } from '../context/AuthContext';
+
+const CHENNAI_COORDINATES = [13.0827, 80.2707];
 
 const CrimeHeatmap = () => {
   const [crimeData, setCrimeData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [timeRange, setTimeRange] = useState('week'); // 'day', 'week', 'month', 'year'
+  const [timeRange, setTimeRange] = useState('week');
+  const { token } = useAuth();
 
-  const fetchCrimeData = async () => {
+  const fetchCrimeData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`http://127.0.0.1:8000/crimes?timeRange=${timeRange}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/reports/nearby`,
+        {
+          params: {
+            lat: CHENNAI_COORDINATES[0],
+            lon: CHENNAI_COORDINATES[1],
+            radius: 5000,
+            timeRange
+          },
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
       setCrimeData(response.data);
       setError(null);
     } catch (err) {
@@ -22,50 +38,30 @@ const CrimeHeatmap = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeRange, token]);
 
   useEffect(() => {
     fetchCrimeData();
-  }, [timeRange]);
+    const interval = setInterval(fetchCrimeData, 60000); // Update every minute
+    return () => clearInterval(interval);
+  }, [fetchCrimeData]);
 
   const getCircleColor = (crimeType) => {
     const colors = {
-      theft: '#FF0000',
-      assault: '#FF4500',
-      vandalism: '#FFA500',
-      burglary: '#FF6347',
-      harassment: '#FF69B4',
-      fraud: '#9370DB',
-      accident: '#4169E1',
-      other: '#808080'
+      theft: '#ff0000',
+      assault: '#ff4500',
+      vandalism: '#ffa500',
+      default: '#ff8c00'
     };
-    return colors[crimeType] || colors.other;
+    return colors[crimeType] || colors.default;
   };
 
-  const getCircleRadius = (timeRange) => {
-    const radiuses = {
-      day: 100,
-      week: 200,
-      month: 300,
-      year: 400
-    };
-    return radiuses[timeRange] || radiuses.week;
-  };
+  if (loading) return <div className="loading">Loading crime data...</div>;
+  if (error) return <div className="error">{error}</div>;
 
-  if (loading) {
-    return <div className="loading">Loading crime data...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
-
-  // Chennai coordinates
-  const CHENNAI_COORDINATES = [13.0827, 80.2707];
-  
   return (
-    <div className="heatmap-container">
-      <div className="heatmap-controls">
+    <div className="crime-heatmap">
+      <div className="map-controls">
         <select 
           value={timeRange} 
           onChange={(e) => setTimeRange(e.target.value)}
@@ -74,66 +70,44 @@ const CrimeHeatmap = () => {
           <option value="day">Last 24 Hours</option>
           <option value="week">Last Week</option>
           <option value="month">Last Month</option>
-          <option value="year">Last Year</option>
         </select>
       </div>
 
       <MapContainer
         center={CHENNAI_COORDINATES}
         zoom={12}
-        scrollWheelZoom={true}
-        className="crime-map"
+        style={{ height: '600px', width: '100%' }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; OpenStreetMap contributors'
         />
-        
+
         {crimeData.map((crime, index) => (
           <Circle
             key={index}
-            center={[parseFloat(crime.location.latitude), parseFloat(crime.location.longitude)]}
-            radius={getCircleRadius(timeRange)}
+            center={[crime.location.latitude, crime.location.longitude]}
+            radius={100}
             pathOptions={{
-              color: getCircleColor(crime.crimeType),
-              fillColor: getCircleColor(crime.crimeType),
-              fillOpacity: 0.4
+              color: getCircleColor(crime.crime_type),
+              fillColor: getCircleColor(crime.crime_type),
+              fillOpacity: 0.6
             }}
           >
             <Popup>
               <div className="crime-popup">
-                <h3>{crime.crimeType.charAt(0).toUpperCase() + crime.crimeType.slice(1)}</h3>
+                <h3>{crime.crime_type}</h3>
                 <p>{crime.description}</p>
-                <p className="crime-date">{new Date(crime.dateTime).toLocaleString()}</p>
+                <p>Status: {crime.status}</p>
+                <p>Reported: {new Date(crime.date_time).toLocaleString()}</p>
               </div>
             </Popup>
           </Circle>
         ))}
       </MapContainer>
-
-      <div className="legend">
-        <h4>Crime Types</h4>
-        {Object.entries({
-          theft: 'Theft',
-          assault: 'Assault',
-          vandalism: 'Vandalism',
-          burglary: 'Burglary',
-          harassment: 'Harassment',
-          fraud: 'Fraud',
-          accident: 'Accident',
-          other: 'Other'
-        }).map(([type, label]) => (
-          <div key={type} className="legend-item">
-            <span 
-              className="legend-color" 
-              style={{ backgroundColor: getCircleColor(type) }}
-            ></span>
-            <span>{label}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
 
 export default CrimeHeatmap;
+

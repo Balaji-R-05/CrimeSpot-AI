@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from typing import Dict, Optional, List
@@ -8,9 +9,10 @@ import base64
 import random
 from auth import (
     Token, User, authenticate_user, create_access_token,
-    get_current_active_user, ACCESS_TOKEN_EXPIRE_MINUTES,
-    fake_users_db  # Add this import
+    get_current_active_user, ACCESS_TOKEN_EXPIRE_MINUTES
 )
+from database import Database
+import asyncio
 
 app = FastAPI()
 
@@ -22,6 +24,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Mount uploads directory
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 class Location(BaseModel):
     latitude: str
@@ -44,7 +49,7 @@ def home():
 
 @app.post("/token", response_model=Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
+    user = await authenticate_user(form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -53,7 +58,8 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": str(user.id)},  # Use user.id instead of username
+        expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -199,3 +205,11 @@ async def get_analytics(timeRange: str = "month"):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.on_event("startup")
+async def startup_event():
+    await Database.connect()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    await Database.close()
